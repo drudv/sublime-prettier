@@ -37,9 +37,17 @@ def find_config_path(file_name):
                                stdout=subprocess.PIPE)
     output = process.communicate()[0]
     try:
-        return output.decode('utf-8').splitlines()[0]
+        config_path = output.decode('utf-8').splitlines()[0]
     except IndexError:
-        return None
+        config_path = None
+    if config_path:
+        return config_path
+    home = os.path.expanduser('~')
+    for file_name in ['.prettierrc', 'prettier.config.js']:
+        full_path = os.path.join(home, file_name)
+        if os.path.isfile(full_path):
+            return full_path
+    return None
 
 
 # Calls prettier on the given region and replaces code
